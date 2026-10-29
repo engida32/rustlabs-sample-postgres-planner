@@ -1,0 +1,16 @@
+{
+  "tables": [
+    {
+      "name": "users",
+      "columns": [
+        { "name": "id", "type": "integer", "nullable": false },
+        { "name": "email", "type": "varchar(120)", "nullable": false }
+      ],
+      "primary_key": ["id"],
+      "foreign_keys": [],
+      "indexes": [
+        { "name": "users_email_key", "columns": ["email"], "unique": true }
+      ]
+    }
+  ]
+}

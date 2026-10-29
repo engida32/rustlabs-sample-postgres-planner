@@ -1,0 +1,32 @@
+schema_version = "1.4"
+
+artifacts = [
+    { source = "/app/planner", exclude = ["__pycache__", "*.pyc"] },
+]
+
+[task]
+name = "engida32/postgres-schema-migration-planner"
+description = "Build a deterministic PostgreSQL schema migration and rollback planner from before/after JSON, with foreign-key ordering, safe renames, type widening, and destructive-change guards."
+authors = [{ name = "Engida Lishan" }]
+keywords = ["postgresql", "schema-migration", "sql", "database", "rollback"]
+
+[metadata]
+difficulty = "frontier"
+category = "Implementation"
+oracle_reward_threshold = 1.0
+
+[agent]
+timeout_sec = 72000.0
+user = "agent"
+
+[verifier]
+timeout_sec = 3600.0
+environment_mode = "shared"
+user = "root"
+
+[environment]
+build_timeout_sec = 2400.0
+network_mode = "allowlist"
+cpus = 2
+memory_mb = 4096
+storage_mb = 10240
