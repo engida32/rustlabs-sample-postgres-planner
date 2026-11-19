@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  task:
+    name: Reference planner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Extract the reference planner
+        run: |
+          python - <<'PY'
+          import pathlib
+          solve = pathlib.Path("solution/solve.sh").read_text()
+          body = solve.split("<<'PY'\n", 1)[1].rsplit("\nPY\n", 1)[0]
+          pathlib.Path("plan.py").write_text(body + "\n")
+          PY
+
+      - name: Run the graded suite against the reference planner
+        env:
+          PGHOST: localhost
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGDATABASE: postgres
+          PLANNER: ${{ github.workspace }}/plan.py
+        run: python -m pytest -q tests/test_planner.py
